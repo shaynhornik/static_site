@@ -1,5 +1,5 @@
 import unittest
-from markdown_blocks import markdown_to_blocks, block_to_block_type, BlockType
+from markdown_blocks import markdown_to_blocks, block_to_block_type, BlockType, extract_title
 
 
 class TestMarkdownToHTML(unittest.TestCase):
@@ -59,3 +59,61 @@ This is the same paragraph on a new line
         self.assertEqual(block_to_block_type(block), BlockType.OLIST)
         block = "paragraph"
         self.assertEqual(block_to_block_type(block), BlockType.PARAGRAPH)
+
+    def test_extract_title_single_h1(self):
+        md = """
+# This is a title
+
+This is just a regular paragraph
+** This is bold text**
+"""
+        self.assertEqual(extract_title(md), "This is a title")
+
+    def test_extract_title_multiple_h1(self):
+        md = """
+# This is a title
+# This is a second title
+
+This is just a regular paragraph
+"""
+        with self.assertRaises(Exception) as cm:
+            extract_title(md)
+        self.assertIn("Multiple Titles", str(cm.exception))
+
+
+    def test_extract_title_no_h1(self):
+        md = """
+This is not a title
+There is no title
+lolololol
+"""
+        with self.assertRaises(Exception) as cm:
+            extract_title(md)
+        self.assertIn("No Title", str(cm.exception))
+
+    def test_extract_title_no_space(self):
+        md = """
+#There is no space for this title
+"""
+
+        with self.assertRaises(Exception) as cm:
+            extract_title(md)
+        self.assertIn("No Title", str(cm.exception))
+
+    def test_extract_title_double_hashtags(self):
+        md = """
+##This is an invalid title
+"""
+
+        with self.assertRaises(Exception) as cm:
+            extract_title(md)
+        self.assertIn("No Title", str(cm.exception))
+
+    def test_extract_title_double_hashtags_and_space(self):
+        md = """
+## This is an invalid title
+"""
+
+        with self.assertRaises(Exception) as cm:
+            extract_title(md)
+        self.assertIn("No Title", str(cm.exception)) 

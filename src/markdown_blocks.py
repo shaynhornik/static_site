@@ -47,3 +47,14 @@ def block_to_block_type(block):
         return BlockType.OLIST
     return BlockType.PARAGRAPH
 
+def extract_title(markdown):
+    lines = markdown.split("\n")
+    title = None
+    for line in lines:
+        if line.startswith("# "):
+            if title:
+                raise Exception("Multiple Titles found")
+            title = line[2:].strip()
+    if title:
+        return title
+    raise Exception("No Title lines found in document")
