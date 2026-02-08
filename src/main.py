@@ -1,11 +1,13 @@
 import os
 import shutil
 from textnode import TextNode, TextType
+from generate_page import generate_page, generate_pages_recursive
 
 def main():
     test = TextNode("Anchor text", TextType.LINK, "https://www.boot.dev")
     print(test)
     static_to_public("static", "public")
+    generate_pages_recursive("content", "template.html", "public")
 
 def static_to_public(static, public):
     if os.path.exists(public):
