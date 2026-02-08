@@ -1,18 +1,24 @@
+import sys
 import os
 import shutil
 from textnode import TextNode, TextType
 from generate_page import generate_page, generate_pages_recursive
 
+
+
 def main():
+    basepath = "/"
+    if len(sys.argv) > 1:
+        basepath = sys.argv[1]
     test = TextNode("Anchor text", TextType.LINK, "https://www.boot.dev")
     print(test)
-    static_to_public("static", "public")
-    generate_pages_recursive("content", "template.html", "public")
+    static_to_public("static", "docs")
+    generate_pages_recursive("content", "template.html", "docs", basepath)
 
 def static_to_public(static, public):
     if os.path.exists(public):
         shutil.rmtree(public)
-        os.mkdir(public)
+    os.mkdir(public)
 
     items_in_static = os.listdir(static)
     for item in items_in_static:
